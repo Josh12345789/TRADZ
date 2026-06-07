@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KACHESA TRADEZ - Log Execution</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #060913;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #f3f4f6;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 280px;
+    background: #0c101f;
+    padding: 30px 24px;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #00ffcc;
+    letter-spacing: -0.5px;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #00ffcc;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ffcc;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu a {
+    padding: 14px 18px;
+    color: #8f9cae;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu a:hover, .menu a.active {
+    background: rgba(0, 255, 204, 0.06);
+    color: #00ffcc;
+}
+
+.menu a.active {
+    font-weight: 700;
+    border-left: 3px solid #00ffcc;
+    border-radius: 4px 12px 12px 4px;
+}
+
+/* MAIN FORM */
+.main {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-box {
+    background: #0c101f;
+    width: 100%;
+    max-width: 540px;
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.form-box h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 30px;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    background: #111728;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    color: #fff;
+    padding: 14px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #00ffcc;
+}
+
+.submit-btn {
+    width: 100%;
+    background: #00ffcc;
+    color: #060913;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.submit-btn:hover {
+    opacity: 0.95;
+}
+
+.success-msg {
+    margin-top: 20px;
+    color: #00ffcc;
+    text-align: center;
+    font-weight: 500;
+    font-size: 14px;
+    display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo">KACHESA TRADEZ</div>
+    <div class="menu">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="journal.html" class="active">📖 Journal</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="form-box">
+        <h2>Log S&P500 Execution</h2>
+        
+        <form id="journalForm" onsubmit="saveTrade(event)">
+            <div class="form-group">
+                <label for="tradeDay">Trading Day</label>
+                <select id="tradeDay" required>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tradeLots">Lot Allocation</label>
+                <input type="number" id="tradeLots" step="0.01" placeholder="0.00" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tradeBias">Execution Bias</label>
+                <select id="tradeBias" required>
+                    <option value="BULLISH">BULLISH (Long)</option>
+                    <option value="BEARISH">BEARISH (Short)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tradeResult">Outcome Status</label>
+                <select id="tradeResult" required>
+                    <option value="WIN">WIN</option>
+                    <option value="LOSS">LOSS</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tradePnl">Return Absolute Value ($ PnL)</label>
+                <input type="number" id="tradePnl" step="0.01" placeholder="0.00" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Commit to Journal</button>
+            <div class="success-msg" id="successMessage">METRICS COMMITTED TO LOCAL STORAGE MATRIX</div>
+        </form>
+    </div>
+</div>
+
+<script>
+function saveTrade(e) {
+    e.preventDefault();
+
+    let day = document.getElementById('tradeDay').value;
+    let lots = document.getElementById('tradeLots').value;
+    let bias = document.getElementById('tradeBias').value;
+    let result = document.getElementById('tradeResult').value;
+    let pnl = parseFloat(document.getElementById('tradePnl').value);
+
+    if(result === 'LOSS' && pnl > 0) {
+        pnl = -pnl;
+    } else if (result === 'WIN' && pnl < 0) {
+        pnl = Math.abs(pnl);
+    }
+
+    let newTrade = { day, lots, bias, result, pnl };
+    let trades = JSON.parse(localStorage.getItem('trades')) || [];
+    trades.push(newTrade);
+    localStorage.setItem('trades', JSON.stringify(trades));
+
+    let msg = document.getElementById('successMessage');
+    msg.style.display = 'block';
+    
+    document.getElementById('journalForm').reset();
+
+    setTimeout(() => {
+        msg.style.display = 'none';
+    }, 2500);
+}
+</script>
+</body>
+</html>

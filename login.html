@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KACHESA TRADEZ - Authentication Matrix</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@800&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #060913;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #f3f4f6;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.login-box {
+    background: #0c101f;
+    width: 100%;
+    max-width: 440px;
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.logo-header {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #00ffcc;
+    text-align: center;
+    margin-bottom: 35px;
+    letter-spacing: -0.5px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.form-group input {
+    width: 100%;
+    background: #111728;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    color: #fff;
+    padding: 14px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #00ffcc;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.primary-btn {
+    width: 100%;
+    background: #00ffcc;
+    color: #060913;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.primary-btn:hover {
+    opacity: 0.95;
+}
+
+.secondary-btn {
+    width: 100%;
+    background: transparent;
+    color: #8f9cae;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    background: rgba(255,255,255,0.02);
+    color: #fff;
+}
+
+.error-msg {
+    color: #ff4a6b;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 15px;
+    display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="logo-header">KACHESA ACCESS PORTAL</div>
+    
+    <form id="authForm">
+        <div class="form-group">
+            <label for="username">Trader Username</label>
+            <input type="text" id="username" placeholder="Enter custom username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Security Password</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+
+        <div class="btn-container">
+            <button type="button" class="primary-btn" onclick="handleLogin()">Sign In</button>
+            <button type="button" class="secondary-btn" onclick="handleRegister()">Register Global Account</button>
+        </div>
+
+        <div class="error-msg" id="errBox"></div>
+    </form>
+</div>
+
+<!-- Firebase Modular Core App & Auth Libraries via CDN -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
+  const firebaseConfig = {
+    apiKey: "AIzaSyDdr4_zFVH6tXkpG_-N-_KIVwTfJKzmrCQ",
+    authDomain: "tradz-3f8c3.firebaseapp.com",
+    projectId: "tradz-3f8c3",
+    storageBucket: "tradz-3f8c3.firebasestorage.app",
+    messagingSenderId: "676935227746",
+    appId: "1:676935227746:web:edb461ddde1b7e06ba343b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Helper formatting because Firebase requires an email format to store on cloud servers
+  function templateEmail(user) {
+      return `${user.trim().toLowerCase()}@kachesatradez.internal`;
+  }
+
+  window.handleRegister = function() {
+      let user = document.getElementById('username').value;
+      let pass = document.getElementById('password').value;
+      let errBox = document.getElementById('errBox');
+
+      if(!user || !pass) { alert("Fill in all input parameters."); return; }
+
+      createUserWithEmailAndPassword(auth, templateEmail(user), pass)
+          .then((userCredential) => {
+              localStorage.setItem('activeTraderSession', user);
+              window.location.href = 'index.html';
+          })
+          .catch((error) => {
+              errBox.innerText = error.message.replace("Firebase: ", "");
+              errBox.style.display = 'block';
+          });
+  }
+
+  window.handleLogin = function() {
+      let user = document.getElementById('username').value;
+      let pass = document.getElementById('password').value;
+      let errBox = document.getElementById('errBox');
+
+      if(!user || !pass) { alert("Fill in all input parameters."); return; }
+
+      signInWithEmailAndPassword(auth, templateEmail(user), pass)
+          .then((userCredential) => {
+              localStorage.setItem('activeTraderSession', user);
+              window.location.href = 'index.html';
+          })
+          .catch((error) => {
+              errBox.innerText = "Invalid credentials or user does not exist.";
+              errBox.style.display = 'block';
+          });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KACHESA TRADEZ - Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<!-- Keep existing desktop CSS code blocks exactly the same here -->
+<style>
+/* ... [Keep all your existing CSS styling code exactly the same here] ... */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #060913; font-family: 'Space Grotesk', sans-serif; color: #f3f4f6; display: flex; height: 100vh; overflow: hidden; }
+.sidebar { width: 280px; background: #0c101f; padding: 30px 24px; border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; }
+.logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #00ffcc; letter-spacing: -0.5px; margin-bottom: 50px; text-transform: uppercase; position: relative; display: flex; align-items: center; gap: 8px; }
+.logo::before { content: ''; display: inline-block; width: 8px; height: 8px; background: #00ffcc; border-radius: 50%; box-shadow: 0 0 10px #00ffcc; }
+.menu { display: flex; flex-direction: column; gap: 8px; }
+.menu a { padding: 14px 18px; color: #8f9cae; text-decoration: none; font-size: 14px; font-weight: 500; border-radius: 12px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; }
+.menu a:hover, .menu a.active { background: rgba(0, 255, 204, 0.06); color: #00ffcc; }
+.menu a.active { font-weight: 700; border-left: 3px solid #00ffcc; border-radius: 4px 12px 12px 4px; }
+.main { flex: 1; padding: 32px; overflow-y: auto; }
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; background: rgba(12, 16, 31, 0.5); backdrop-filter: blur(10px); padding: 20px 24px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.03); }
+.avatar { display: flex; align-items: center; gap: 16px; }
+.avatar h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+.avatar p { color: #64748b; font-size: 13px; margin-top: 2px; }
+.balance-config { display: flex; align-items: center; gap: 12px; background: #111728; padding: 6px 6px 6px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; }
+.balance-config input { background: transparent; border: none; color: #fff; font-family: 'Space Grotesk', sans-serif; font-weight: 700; width: 100px; outline: none; font-size: 14px; }
+.balance-config button { background: #00ffcc; color: #060913; border: none; padding: 8px 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; }
+.balance-config button:hover { opacity: 0.9; }
+.dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.card { background: #0c101f; padding: 24px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.02); position: relative; overflow: hidden; }
+.card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 12px; }
+.card h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.consistency-box { background: #0c101f; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.02); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.consistency-box h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 16px; }
+.circle-container { position: relative; width: 130px; height: 130px; }
+.circle-svg { transform: rotate(-90deg); }
+.circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.03); stroke-width: 8; }
+.circle-progress { fill: none; stroke: #00ffcc; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 364.42; stroke-dashoffset: 364.42; transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.percentage-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: 700; color: #fff; }
+.chartbox { background: #0c101f; padding: 24px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.02); height: 350px; grid-column: span 2; }
+.tablebox { background: #0c101f; padding: 28px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.02); grid-column: span 2; }
+.tablebox h2 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 14px; }
+th { color: #64748b; font-weight: 500; background: rgba(255, 255, 255, 0.01); }
+.win { color: #00ffcc; }
+.loss { color: #ff4a6b; }
+.clear-btn { background: rgba(255, 74, 107, 0.1); color: #ff4a6b; border: 1px solid rgba(255, 74, 107, 0.2); padding: 10px 20px; border-radius: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 500; cursor: pointer; margin-top: 20px; transition: all 0.2s; }
+.clear-btn:hover { background: #ff4a6b; color: #060913; }
+.logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #64748b; padding: 8px 12px; border-radius: 8px; font-family: 'Space Grotesk'; cursor: pointer; font-size: 12px; }
+.logout-btn:hover { color: #ff4a6b; border-color: #ff4a6b; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <!-- Notice: This text injection node changes based on who logs in -->
+    <div class="logo" id="dynamicBranding">LOADING...</div>
+    <div class="menu">
+        <a href="index.html" class="active">📊 Dashboard</a>
+        <a href="journal.html">📖 Journal</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <div class="avatar">
+            <div>
+                <h2>Welcome Back</h2>
+                <p id="userSubtext">Trader Session</p>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div class="balance-config">
+                <span>Initial:</span>
+                <input type="number" id="initBalanceInput" value="10000">
+                <button onclick="updateInitialBalance()">Set</button>
+            </div>
+            <button class="logout-btn" onclick="terminateSession()">Exit</button>
+        </div>
+    </div>
+
+    <!-- [Keep your existing structural dashboard-grid element blocks identical to before] -->
+    <div class="dashboard-grid">
+        <div>
+            <div class="cards">
+                <div class="card">
+                    <h3>Current Balance</h3>
+                    <h1 id="currBalance">$10,000.00</h1>
+                </div>
+                <div class="card">
+                    <h3>Total PnL</h3>
+                    <h1 id="totalPnl">$0.00</h1>
+                </div>
+                <div class="card">
+                    <h3>Win Rate</h3>
+                    <h1 id="winRate">0%</h1>
+                </div>
+                <div class="card">
+                    <h3>Profit Factor</h3>
+                    <h1 id="profitFactor">0.00</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="consistency-box">
+            <h3>Consistency</h3>
+            <div class="circle-container">
+                <svg width="130" height="130" class="circle-svg">
+                    <circle cx="65" cy="65" r="58" class="circle-bg"/>
+                    <circle cx="65" cy="65" r="58" class="circle-progress" id="consistencyCircle"/>
+                </svg>
+                <div class="percentage-text" id="consistencyPercent">0%</div>
+            </div>
+        </div>
+
+        <div class="chartbox">
+            <canvas id="equityChart"></canvas>
+        </div>
+
+        <div class="tablebox">
+            <h2>Recent S&P500 Execution Logs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Lots</th>
+                        <th>Bias</th>
+                        <th>Result</th>
+                        <th>PnL ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="tradeLogTable">
+                </tbody>
+            </table>
+            <button class="clear-btn" onclick="clearData()">Wipe Memory Store</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Authentication check on initialization
+let currentTrader = localStorage.getItem('activeTraderSession');
+if(!currentTrader) {
+    window.location.href = 'login.html';
+} else {
+    // Inject the active username into the main layout branding container instead of "KACHESA TRADEZ"
+    document.getElementById('dynamicBranding').innerText = currentTrader.toUpperCase();
+    document.getElementById('userSubtext').innerText = `${currentTrader} Matrix Session`;
+}
+
+function terminateSession() {
+    localStorage.removeItem('activeTraderSession');
+    window.location.href = 'login.html';
+}
+
+// ... [Keep the remainder of your original logic for loadDashboard(), clearData(), updateInitialBalance(), and chart calculations exactly the same] ...
+let chartInstance = null;
+
+function loadDashboard() {
+    let initialBalance = parseFloat(localStorage.getItem('initialBalance')) || 10000;
+    document.getElementById('initBalanceInput').value = initialBalance;
+
+    let trades = JSON.parse(localStorage.getItem('trades')) || [];
+    
+    let totalWinPnl = 0;
+    let totalLossPnl = 0;
+    let winCount = 0;
+
+    let tableBody = document.getElementById('tradeLogTable');
+    tableBody.innerHTML = '';
+
+    let balanceHistory = [initialBalance];
+    let chartLabels = ["Start"];
+
+    trades.forEach((trade, index) => {
+        let pnl = parseFloat(trade.pnl);
+        if (trade.result === 'WIN') {
+            totalWinPnl += pnl;
+            winCount++;
+        } else {
+            totalLossPnl += Math.abs(pnl);
+        }
+
+        let currentRunningBalance = balanceHistory[balanceHistory.length - 1] + pnl;
+        balanceHistory.push(currentRunningBalance);
+        chartLabels.push(`T-${index + 1}`);
+
+        let row = `<tr>
+            <td>${trade.day}</td>
+            <td>${trade.lots}</td>
+            <td>${trade.bias}</td>
+            <td class="${trade.result.toLowerCase()}">${trade.result}</td>
+            <td class="${trade.result.toLowerCase()}">${trade.result === 'WIN' ? '+' : '-'}$${Math.abs(pnl).toFixed(2)}</td>
+        </tr>`;
+        tableBody.innerHTML += row;
+    });
+
+    let finalBalance = balanceHistory[balanceHistory.length - 1];
+    let netPnl = finalBalance - initialBalance;
+    let totalTrades = trades.length;
+    let calculatedWinRate = totalTrades > 0 ? Math.round((winCount / totalTrades) * 100) : 0;
+    let calculatedProfitFactor = totalLossPnl > 0 ? (totalWinPnl / totalLossPnl).toFixed(2) : totalWinPnl > 0 ? totalWinPnl.toFixed(2) : "0.00";
+
+    document.getElementById('currBalance').innerText = `$${finalBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    
+    let pnlEl = document.getElementById('totalPnl');
+    pnlEl.innerText = (netPnl >= 0 ? '+' : '') + `$${netPnl.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    pnlEl.className = netPnl >= 0 ? 'win' : 'loss';
+
+    document.getElementById('winRate').innerText = `${calculatedWinRate}%`;
+    document.getElementById('profitFactor').innerText = calculatedProfitFactor;
+
+    let circle = document.getElementById('consistencyCircle');
+    let percentText = document.getElementById('consistencyPercent');
+    let radius = 58;
+    let circumference = 2 * Math.PI * radius;
+    let offset = circumference - (calculatedWinRate / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+    percentText.innerText = `${calculatedWinRate}%`;
+
+    if(chartInstance) { chartInstance.destroy(); }
+
+    let ctx = document.getElementById("equityChart").getContext("2d");
+    chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                data: balanceHistory,
+                borderColor: "#00ffcc",
+                backgroundColor: "rgba(0, 255, 204, 0.03)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.2,
+                pointRadius: 4,
+                pointBackgroundColor: "#060913",
+                pointBorderColor: "#00ffcc",
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { grid: { display: false }, ticks: { color: "#64748b", font: { family: "'Space Grotesk'" } } },
+                y: { grid: { color: "rgba(255,255,255,0.03)" }, ticks: { color: "#64748b", font: { family: "'Space Grotesk'" } } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+}
+
+function updateInitialBalance() {
+    let val = parseFloat(document.getElementById('initBalanceInput').value);
+    if(!isNaN(val)) {
+        localStorage.setItem('initialBalance', val);
+        loadDashboard();
+    }
+}
+
+function clearData() {
+    if(confirm("Wipe all journal logs?")) {
+        localStorage.removeItem('trades');
+        loadDashboard();
+    }
+}
+
+window.onload = loadDashboard;
+</script>
+</body>
+</html>
