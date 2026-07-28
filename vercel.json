@@ -1,21 +1,12 @@
 {
-  "version": 2,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/public/journal.html"
-    },
-    {
-      "source": "/journal.html",
-      "destination": "/public/journal.html"
+      "source": "/api/get-trades",
+      "destination": "/api/get-trades.js"
     },
     {
       "source": "/api/log-trade",
       "destination": "/api/log-trade.js"
-    },
-    {
-      "source": "/api/get-trades",
-      "destination": "/api/get-trades.js"
     }
   ]
 }
