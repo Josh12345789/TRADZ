@@ -1,235 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KACHESA TRADEZ - Log Execution</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADEZ - Trade Execution Journal</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: #151921;
+            --accent-green: #00e676;
+            --accent-red: #ff5252;
+            --text-main: #e0e6ed;
+            --text-dim: #788b9c;
+            --border-color: #232a36;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        .journal-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
 
-body {
-    background: #060913;
-    font-family: 'Space Grotesk', sans-serif;
-    color: #f3f4f6;
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-}
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
 
-/* SIDEBAR */
-.sidebar {
-    width: 280px;
-    background: #0c101f;
-    padding: 30px 24px;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex;
-    flex-direction: column;
-}
+        .form-group {
+            margin-bottom: 18px;
+        }
 
-.logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    color: #00ffcc;
-    letter-spacing: -0.5px;
-    margin-bottom: 50px;
-    text-transform: uppercase;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
 
-.logo::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: #00ffcc;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #00ffcc;
-}
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
 
-.menu {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+        input:focus, select:focus {
+            border-color: var(--accent-green);
+        }
 
-.menu a {
-    padding: 14px 18px;
-    color: #8f9cae;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 12px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background-color: var(--accent-green);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: opacity 0.2s ease;
+        }
 
-.menu a:hover, .menu a.active {
-    background: rgba(0, 255, 204, 0.06);
-    color: #00ffcc;
-}
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
 
-.menu a.active {
-    font-weight: 700;
-    border-left: 3px solid #00ffcc;
-    border-radius: 4px 12px 12px 4px;
-}
+        .status-banner {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: 600;
+        }
 
-/* MAIN FORM */
-.main {
-    flex: 1;
-    padding: 32px;
-    overflow-y: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        .status-success {
+            background-color: rgba(0, 230, 118, 0.15);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
 
-.form-box {
-    background: #0c101f;
-    width: 100%;
-    max-width: 540px;
-    padding: 40px;
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.02);
-}
-
-.form-box h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 30px;
-    color: #fff;
-    letter-spacing: -0.5px;
-}
-
-.form-group {
-    margin-bottom: 24px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #64748b;
-}
-
-.form-group input, .form-group select {
-    width: 100%;
-    background: #111728;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    color: #fff;
-    padding: 14px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.form-group input:focus, .form-group select:focus {
-    border-color: #00ffcc;
-}
-
-.submit-btn {
-    width: 100%;
-    background: #00ffcc;
-    color: #060913;
-    border: none;
-    border-radius: 12px;
-    padding: 16px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.submit-btn:hover {
-    opacity: 0.95;
-}
-
-.success-msg {
-    margin-top: 20px;
-    color: #00ffcc;
-    text-align: center;
-    font-weight: 500;
-    font-size: 14px;
-    display: none;
-}
-</style>
+        .status-error {
+            background-color: rgba(255, 82, 82, 0.15);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+        }
+    </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="logo">KACHESA TRADEZ</div>
-    <div class="menu">
-        <a href="index.html">📊 Dashboard</a>
-        <a href="journal.html" class="active">📖 Journal</a>
-    </div>
-</div>
+<div class="journal-container">
+    <div class="brand-title">TRADZ // LOG EXECUTION</div>
 
-<div class="main">
-    <div class="form-box">
-        <h2>Log S&P500 Execution</h2>
-        
-        <form id="journalForm" onsubmit="saveTrade(event)">
-            <div class="form-group">
-                <label for="tradeDay">Trading Day</label>
-                <select id="tradeDay" required>
-                    <option value="Monday">Monday</option>
-                    <option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option>
-                    <option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                </select>
-            </div>
+    <form id="journalForm" onsubmit="saveTrade(event)">
+        <div class="form-group">
+            <label for="tradeDay">Trading Session / Day</label>
+            <input type="text" id="tradeDay" placeholder="e.g. Monday - NY Open" required>
+        </div>
 
-            <div class="form-group">
-                <label for="tradeLots">Lot Allocation</label>
-                <input type="number" id="tradeLots" step="0.01" placeholder="0.00" required>
-            </div>
+        <div class="form-group">
+            <label for="tradeLots">Position Size (Lots)</label>
+            <input type="number" step="0.01" id="tradeLots" placeholder="e.g. 1.50" required>
+        </div>
 
-            <div class="form-group">
-                <label for="tradeBias">Execution Bias</label>
-                <select id="tradeBias" required>
-                    <option value="BULLISH">BULLISH (Long)</option>
-                    <option value="BEARISH">BEARISH (Short)</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="tradeBias">Directional Bias</label>
+            <select id="tradeBias" required>
+                <option value="BULLISH">BULLISH (BUY)</option>
+                <option value="BEARISH">BEARISH (SELL)</option>
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label for="tradeResult">Outcome Status</label>
-                <select id="tradeResult" required>
-                    <option value="WIN">WIN</option>
-                    <option value="LOSS">LOSS</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="tradeResult">Outcome</label>
+            <select id="tradeResult" required>
+                <option value="WIN">WIN</option>
+                <option value="LOSS">LOSS</option>
+                <option value="BE">BREAKEVEN</option>
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label for="tradePnl">Return Absolute Value ($ PnL)</label>
-                <input type="number" id="tradePnl" step="0.01" placeholder="0.00" required>
-            </div>
+        <div class="form-group">
+            <label for="tradePnl">P&L ($ Amount)</label>
+            <input type="number" step="0.01" id="tradePnl" placeholder="e.g. 450.00 or -150.00" required>
+        </div>
 
-            <button type="submit" class="submit-btn">Commit to Journal</button>
-            <div class="success-msg" id="successMessage">METRICS COMMITTED TO LOCAL STORAGE MATRIX</div>
-        </form>
-    </div>
+        <button type="submit" class="submit-btn">LOG TRADE TO NOTION</button>
+    </form>
+
+    <div id="statusBanner" class="status-banner"></div>
 </div>
 
 <script>
-function saveTrade(e) {
+async function saveTrade(e) {
     e.preventDefault();
+
+    const banner = document.getElementById('statusBanner');
+    banner.style.display = 'none';
 
     let day = document.getElementById('tradeDay').value;
     let lots = document.getElementById('tradeLots').value;
@@ -237,26 +174,49 @@ function saveTrade(e) {
     let result = document.getElementById('tradeResult').value;
     let pnl = parseFloat(document.getElementById('tradePnl').value);
 
-    if(result === 'LOSS' && pnl > 0) {
+    // Normalize PnL signs based on trade result
+    if (result === 'LOSS' && pnl > 0) {
         pnl = -pnl;
     } else if (result === 'WIN' && pnl < 0) {
         pnl = Math.abs(pnl);
     }
 
-    let newTrade = { day, lots, bias, result, pnl };
-    let trades = JSON.parse(localStorage.getItem('trades')) || [];
-    trades.push(newTrade);
-    localStorage.setItem('trades', JSON.stringify(trades));
+    const tradeData = { day, lots, bias, result, pnl };
 
-    let msg = document.getElementById('successMessage');
-    msg.style.display = 'block';
-    
-    document.getElementById('journalForm').reset();
+    // 1. Local Storage Backup
+    let localTrades = JSON.parse(localStorage.getItem('trades')) || [];
+    localTrades.push(tradeData);
+    localStorage.setItem('trades', JSON.stringify(localTrades));
 
-    setTimeout(() => {
-        msg.style.display = 'none';
-    }, 2500);
+    // 2. Dispatch to Local Proxy Bridge Server
+    try {
+        const response = await fetch('http://localhost:3000/api/log-trade', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tradeData)
+        });
+
+        const resData = await response.json();
+
+        if (response.ok && resData.success) {
+            showBanner('EXECUTION COMMITTED TO NOTION & LOCAL STORAGE', 'success');
+            document.getElementById('journalForm').reset();
+        } else {
+            showBanner('SAVED LOCALLY (NOTION API ERROR: ' + (resData.error || 'Check server console') + ')', 'error');
+        }
+    } catch (err) {
+        console.error('Fetch error:', err);
+        showBanner('SAVED LOCALLY (SERVER OFFLINE - RUN node server.js)', 'error');
+    }
+}
+
+function showBanner(message, type) {
+    const banner = document.getElementById('statusBanner');
+    banner.innerText = message;
+    banner.className = 'status-banner ' + (type === 'success' ? 'status-success' : 'status-error');
+    banner.style.display = 'block';
 }
 </script>
+
 </body>
 </html>
