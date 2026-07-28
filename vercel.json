@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/get-trades",
+      "destination": "/api/get-trades.js"
+    },
+    {
+      "source": "/api/log-trade",
+      "destination": "/api/log-trade.js"
+    }
+  ]
+}
