@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
-    // Only allow POST requests
+    res.setHeader('Content-Type', 'application/json');
+
     if (req.method !== 'POST') {
         return res.status(405).json({ success: false, error: 'Method not allowed' });
     }
@@ -42,13 +43,13 @@ export default async function handler(req, res) {
         const data = await response.json();
 
         if (!response.ok) {
-            console.error('Notion API Error:', data);
+            console.error('Notion API Insert Error:', data);
             return res.status(response.status).json({ success: false, error: data.message });
         }
 
         return res.status(200).json({ success: true, pageId: data.id });
     } catch (error) {
-        console.error('Serverless Error:', error);
+        console.error('Serverless Log Error:', error);
         return res.status(500).json({ success: false, error: error.message });
     }
 }
