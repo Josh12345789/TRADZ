@@ -23,16 +23,28 @@ export default async function handler(req, res) {
             return res.status(response.status).json({ success: false, error: data.message });
         }
 
-        // Format Notion page objects into simple JS objects
         const trades = data.results.map(page => {
             const props = page.properties;
+
+            // Extract primary title (handles 'Day', 'Name', or primary Title column)
+            const dayProp = props.Day || props.Name || Object.values(props).find(p => p.type === 'title');
+            const dayText = dayProp?.title?.[0]?.text?.content 
+                         || dayProp?.rich_text?.[0]?.text?.content 
+                         || 'N/A';
+
+            // Extract numeric & select fields
+            const lots = props.Lots?.number ?? props.Lots?.number ?? 0;
+            const bias = props.Bias?.select?.name || props.Bias?.rich_text?.[0]?.text?.content || 'NEUTRAL';
+            const result = props.Result?.select?.name || props.Result?.rich_text?.[0]?.text?.content || 'EXECUTION';
+            const pnl = props.PnL?.number ?? props['P&L']?.number ?? 0;
+
             return {
                 id: page.id,
-                day: props.Day?.title[0]?.text?.content || 'N/A',
-                lots: props.Lots?.number ?? 0,
-                bias: props.Bias?.select?.name || 'NEUTRAL',
-                result: props.Result?.select?.name || 'EXECUTION',
-                pnl: props.PnL?.number ?? 0
+                day: dayText,
+                lots: lots,
+                bias: bias,
+                result: result,
+                pnl: pnl
             };
         });
 
