@@ -5,7 +5,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ success: false, error: 'Method not allowed' });
     }
 
-    const { day, lots, bias, result, pnl } = req.body;
+    const { title, date, asset, type, bias, result, tp, pnl } = req.body;
 
     const NOTION_KEY = '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';
     const DATABASE_ID = '33bbaf12ae92807a8795eaafeac879cc';
@@ -21,19 +21,28 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 parent: { database_id: DATABASE_ID },
                 properties: {
-                    'Day': {
-                        title: [{ text: { content: day || 'N/A' } }]
+                    'Name': {
+                        title: [{ text: { content: title || 'New Trade' } }]
                     },
-                    'Lots': {
-                        number: parseFloat(lots) || 0
+                    'Date': {
+                        date: { start: date || new Date().toISOString().split('T')[0] }
+                    },
+                    'asset': {
+                        select: { name: asset || 'sp500' }
+                    },
+                    'Type': {
+                        select: { name: type || 'Buy' }
                     },
                     'Bias': {
-                        select: { name: bias || 'NEUTRAL' }
+                        select: { name: bias || 'Bullish' }
                     },
                     'Result': {
-                        select: { name: result || 'EXECUTION' }
+                        select: { name: result || 'Win' }
                     },
-                    'PnL': {
+                    'Tp': {
+                        select: { name: tp || 'High' }
+                    },
+                    'PNL': {
                         number: parseFloat(pnl) || 0
                     }
                 }
@@ -43,7 +52,7 @@ export default async function handler(req, res) {
         const data = await response.json();
 
         if (!response.ok) {
-            console.error('Notion API Insert Error:', data);
+            console.error('Notion Insert Error:', data);
             return res.status(response.status).json({ success: false, error: data.message });
         }
 
