@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/public/journal.html"
+    },
+    {
+      "source": "/journal.html",
+      "destination": "/public/journal.html"
+    },
+    {
+      "source": "/api/log-trade",
+      "destination": "/api/log-trade.js"
+    }
+  ]
+}
