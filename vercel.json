@@ -12,6 +12,10 @@
     {
       "source": "/api/log-trade",
       "destination": "/api/log-trade.js"
+    },
+    {
+      "source": "/api/get-trades",
+      "destination": "/api/get-trades.js"
     }
   ]
 }
