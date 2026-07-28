@@ -21,34 +21,40 @@ export default async function handler(req, res) {
         const data = await response.json();
 
         if (!response.ok) {
-            console.error('Notion API Query Error:', data);
-            return res.status(response.status).json({ 
-                success: false, 
-                error: data.message || `Notion API error (${response.status})` 
-            });
+            console.error('Notion Fetch Error:', data);
+            return res.status(response.status).json({ success: false, error: data.message });
         }
 
         const trades = data.results.map(page => {
             const props = page.properties;
 
-            // Extract Day/Title property with fallbacks for common naming variations
-            const dayProp = props.Day || props.Name || Object.values(props).find(p => p.type === 'title');
-            const dayText = dayProp?.title?.[0]?.text?.content 
-                         || dayProp?.rich_text?.[0]?.text?.content 
-                         || 'N/A';
+            // Extract Name/Title
+            const titleProp = props.Name || props.Title || Object.values(props).find(p => p.type === 'title');
+            const titleText = titleProp?.title?.[0]?.text?.content || 'Untitled Trade';
 
-            const lots = props.Lots?.number ?? 0;
-            const bias = props.Bias?.select?.name || props.Bias?.rich_text?.[0]?.text?.content || 'NEUTRAL';
-            const result = props.Result?.select?.name || props.Result?.rich_text?.[0]?.text?.content || 'EXECUTION';
-            const pnl = props.PnL?.number ?? props['P&L']?.number ?? 0;
+            // Extract Date
+            const dateVal = props.Date?.date?.start || 'N/A';
+
+            // Extract Select values (case-sensitive mapping based on Notion screenshot)
+            const assetVal = props.asset?.select?.name || props.asset?.rich_text?.[0]?.text?.content || 'N/A';
+            const typeVal = props.Type?.select?.name || props.Type?.rich_text?.[0]?.text?.content || 'N/A';
+            const biasVal = props.Bias?.select?.name || props.Bias?.rich_text?.[0]?.text?.content || 'N/A';
+            const resultVal = props.Result?.select?.name || props.Result?.rich_text?.[0]?.text?.content || 'N/A';
+            const tpVal = props.Tp?.select?.name || props.Tp?.rich_text?.[0]?.text?.content || 'N/A';
+
+            // Extract PNL (Number)
+            const pnlVal = props.PNL?.number ?? 0;
 
             return {
                 id: page.id,
-                day: dayText,
-                lots: lots,
-                bias: bias,
-                result: result,
-                pnl: pnl
+                title: titleText,
+                date: dateVal,
+                asset: assetVal,
+                type: typeVal,
+                bias: biasVal,
+                result: resultVal,
+                tp: tpVal,
+                pnl: pnlVal
             };
         });
 
